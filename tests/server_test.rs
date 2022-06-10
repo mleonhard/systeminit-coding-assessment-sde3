@@ -31,22 +31,13 @@ fn post_json_req(path: &'static str, body: impl serde::Serialize) -> Request {
 }
 
 #[test]
-fn test_get_slash() {
-    assert_eq!(
-        Ok(Response::redirect_303("/index.html")),
-        handle_req(&Arc::new(State::new()), &new_req("/"))
-    );
-}
-
-#[test]
 fn test_get_index_html() {
-    assert_eq!(
-        Ok(Response::html(
-            200,
-            include_bytes!("../public/index.html").as_slice()
-        )),
-        handle_req(&Arc::new(State::new()), &new_req("/index.html"))
-    );
+    for path in ["/", "/index.html"] {
+        assert_eq!(
+            Ok(Response::html(200, include_str!("../dist/index.html"))),
+            handle_req(&Arc::new(State::new()), &new_req(path))
+        );
+    }
 }
 
 #[test]
