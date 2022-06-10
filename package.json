@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "typescript": "^4.7.3"
+  },
+  "name": "ebb-frontend",
+  "description": "Ephemeral Bulletin Board Web App",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mleonhard/systeminit-coding-assessment-sde3.git"
+  },
+  "author": "Michael Leonhard <michael@leonhardllc.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/mleonhard/systeminit-coding-assessment-sde3/issues"
+  },
+  "homepage": "https://github.com/mleonhard/systeminit-coding-assessment-sde3#readme"
+}

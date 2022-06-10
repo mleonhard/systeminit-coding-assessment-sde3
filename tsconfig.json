@@ -1,0 +1,7 @@
+{
+  "files": ["public/index.ts"],
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "target": "es5"
+  }
+}

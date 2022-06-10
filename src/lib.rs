@@ -77,7 +77,7 @@ pub fn handle_req(state: &Arc<State>, req: &Request) -> Result<Response, Respons
         }
         ("GET", "/index.js") => Ok(Response::new(200)
             .with_type(ContentType::JavaScript)
-            .with_body(include_str!("../dist/index.html"))),
+            .with_body(include_str!("../dist/index.js"))),
         ("GET", "/get-messages") => Ok(get_messages(state)),
         ("POST", "/add-message") => add_message(state, req),
         _ => Ok(Response::text(404, "Not found")),
