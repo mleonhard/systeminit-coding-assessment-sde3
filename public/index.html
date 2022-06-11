@@ -16,7 +16,6 @@
             }
         }
     </script>
-    <script src="index.js"></script>
 </head>
 <body class="bg-slate-50">
 <div class="container mx-auto bg-white">
@@ -27,18 +26,22 @@
         Messages disappear whenever the server restarts.
     </p>
     <form class="p-4 flex gap-x-4 gap-y-2 items-center flex-wrap">
-        <label for="messagebox">Enter a message:</label>
-        <input id="messagebox" type="text" size="40" class="flex-1"/>
+        <label for="messageBoxElem">Enter a message:</label>
+        <input id="messageBoxElem" type="text" size="40" class="flex-1"/>
         <button class="box-border p-2 border-2 rounded-xl border-black bg-sky-100 hover:bg-sky-200 text-black"
                 type="button"
                 onclick="add_button_clicked()">Add Message
         </button>
     </form>
-    <ul>
-        <li class="p-4 box-border border-2 border-dashed border-transparent border-t-gray-200">"message1"</li>
-        <li class="p-4 box-border border-2 border-dashed border-transparent border-t-gray-200">"message1"</li>
+    <ul id="messageListElem">
+        <li
+                class="p-4 box-border border-2 border-dashed border-transparent border-t-gray-200"
+                style="display: none;"
+                id="messageTemplateElem"
+        ></li>
     </ul>
 </div>
 
 </body>
+<script src="index.js"></script>
 </html>
