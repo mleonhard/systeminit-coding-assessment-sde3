@@ -142,6 +142,12 @@ function isMessagesResponse(object: unknown): object is MessagesResponse {
     return true;
 }
 
+function sanitizeHTML(text: string): string {
+    var element = document.createElement('div');
+    element.innerText = text;
+    return element.innerHTML;
+}
+
 function processMessagesResponse(response: Object | null) {
     if (response == null) {
         return null;
@@ -164,8 +170,7 @@ function processMessagesResponse(response: Object | null) {
         if (message === undefined) {
             messageListElem.removeChild(messageElem);
         } else {
-            // TODO: Sanitize.
-            messageElem.innerHTML = message;
+            messageElem.innerHTML = sanitizeHTML(message);
         }
     }
     while (true) {
@@ -174,8 +179,7 @@ function processMessagesResponse(response: Object | null) {
             break;
         }
         const messageElem = messageTemplateElem.cloneNode(true) as HTMLLIElement;
-        // TODO: Sanitize.
-        messageElem.innerHTML = message;
+        messageElem.innerHTML = sanitizeHTML(message);
         messageListElem.appendChild(messageElem);
     }
 }
