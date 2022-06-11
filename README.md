@@ -17,3 +17,19 @@ This is my implementation of <https://github.com/systeminit/coding-assessment-sd
 ![A browser window showing Ephemeral Bulletin Board app with some messages](screenshot.png)
 
 ![A browser window showing Ephemeral Bulletin Board app showing an error message](screenshot-error.png)
+
+## Development
+Start backend:
+```
+./build-and-run.sh
+```
+
+In another terminal, start node server with hot-reload:
+```
+npm run serve
+```
+Connect to it at <http://localhost:3000>
+
+Lint: `npm run lint`
+
+Vue configuration docs: <https://cli.vuejs.org/config/>

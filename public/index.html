@@ -4,18 +4,6 @@
     <title>Ephemeral Bulletin Board</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        clifford: '#da373d',
-                    }
-                }
-            }
-        }
-    </script>
 </head>
 <body class="bg-slate-50">
 <div class="container mx-auto bg-white">
@@ -25,9 +13,9 @@
     <p class="p-4 text-lg">
         Messages disappear whenever the server restarts.
     </p>
-    <form class="p-4 flex gap-x-4 gap-y-2 items-center flex-wrap" onsubmit="add_button_clicked(); return false;">
+    <form id="messageForm" class="p-4 flex gap-x-4 gap-y-2 items-center flex-wrap">
         <label for="messageBoxElem">Enter a message:</label>
-        <input id="messageBoxElem" type="text" size="40" class="flex-1" autofocus/>
+        <input id="messageBoxElem" type="text" size="40" class="flex-1 box-border p-2 border border-black" autofocus/>
         <button class="box-border p-2 border-2 rounded-xl border-black bg-sky-100 hover:bg-sky-200 text-black"
                 type="submit">Add Message
         </button>
@@ -40,5 +28,4 @@
 </div>
 
 </body>
-<script src="index.js"></script>
 </html>

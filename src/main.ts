@@ -1,14 +1,11 @@
-console.log('loading index.ts');
+import './assets/tailwind.css'
+console.log('index.ts');
 
 function getElementById(id: string): HTMLElement {
     const elem = document.getElementById(id) as HTMLInputElement;
     console.assert(elem !== null, `element with id "${id}" not found`);
     return elem;
 }
-
-const messageBoxElem = getElementById("messageBoxElem") as HTMLInputElement;
-const messageListElem = getElementById("messageListElem") as HTMLOListElement;
-const messageTemplateElem = getElementById("messageTemplateElem") as HTMLLIElement;
 
 // TODO: Find a good library to replace `fetchWithTimeout` and `doRpc`.
 interface RequestInitWithTimeout extends RequestInit {
@@ -18,7 +15,7 @@ interface RequestInitWithTimeout extends RequestInit {
 class TimeoutError {
 }
 
-async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInitWithTimeout): Promise<Response> {
+async function fetchWithTimeout(input: RequestInfo, init?: RequestInitWithTimeout): Promise<Response> {
     let timeout_ms: number;
     if (init?.timeout_ms == null) {
         return fetch(input, init);
@@ -67,7 +64,7 @@ async function doRpc(method: string, path: string, body: Object | null): Promise
                 "content-type": "application/json",
             };
         }
-        let response: Response = await fetchWithTimeout(url, init);
+        const response: Response = await fetchWithTimeout(url.toString(), init);
         const contentType = (response.headers.get('content-type') ?? "").toLowerCase();
         const responseBody = await response.blob();
         console.log(`doRpc response {status: ${response.status}, type: ${contentType}, len: ${responseBody.size}}`);
@@ -143,7 +140,7 @@ function isMessagesResponse(object: unknown): object is MessagesResponse {
 
 function sanitizeHTML(text: string): string {
     // TODO: Find out if this is enough.
-    var element = document.createElement('div');
+    const element = document.createElement('div');
     element.innerText = text;
     return element.innerHTML;
 }
@@ -159,22 +156,24 @@ function processMessagesResponse(response: Object | null) {
     }
     const messages = response.messages;
     // TODO: Use a library or framework to make these DOM changes.
-    let messageElems: Array<HTMLLIElement> = Array.from(messageListElem.querySelectorAll("li"));
-    while (true) {
+    const messageListElem = getElementById("messageListElem") as HTMLOListElement;
+    const messageTemplateElem = getElementById("messageTemplateElem") as HTMLLIElement;
+    const messageElems: Array<HTMLLIElement> = Array.from(messageListElem.querySelectorAll("li"));
+    while (messageElems.length > 0) {
         // https://github.com/microsoft/TypeScript/issues/37639
-        let messageElem = messageElems.shift();
+        const messageElem = messageElems.shift();
         if (messageElem === undefined) {
             break;
         }
-        let message = messages.shift();
+        const message = messages.shift();
         if (message === undefined) {
             messageListElem.removeChild(messageElem);
         } else {
             messageElem.innerHTML = sanitizeHTML(message);
         }
     }
-    while (true) {
-        let message = messages.shift();
+    while (messages.length > 0) {
+        const message = messages.shift();
         if (message === undefined) {
             break;
         }
@@ -186,7 +185,8 @@ function processMessagesResponse(response: Object | null) {
 
 // TODO: Separate this logic into a class.
 // TODO: Show an activity indicator while processing.
-declare var running: Boolean;
+// eslint-disable-next-line
+export var running: Boolean;
 running = false;
 
 async function add_button_clicked() {
@@ -196,6 +196,8 @@ async function add_button_clicked() {
     }
     try {
         running = true;
+        const messageBoxElem = getElementById("messageBoxElem") as HTMLInputElement;
+        const messageListElem = getElementById("messageListElem") as HTMLOListElement;
         const message: String = messageBoxElem.value.trim();
         if (message.length < 1) {
             return;
@@ -210,7 +212,13 @@ async function add_button_clicked() {
     }
 }
 
-(async () => {
+async function load() {
+    console.log("load()");
+    const messageForm = getElementById("messageForm");
+    messageForm.onsubmit = () => {
+        add_button_clicked();
+        return false;
+    };
     try {
         running = true;
         const response = await doRpc("GET", "/get-messages", null);
@@ -218,4 +226,5 @@ async function add_button_clicked() {
     } finally {
         running = false;
     }
-})();
+}
+window.onload = load;
