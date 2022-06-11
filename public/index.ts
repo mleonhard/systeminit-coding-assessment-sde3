@@ -197,6 +197,7 @@ async function add_button_clicked() {
         const response: Object | null = await doRpc("POST", "/add-message", {"text": message});
         processMessagesResponse(response);
         messageBoxElem.value = "";
+        messageListElem.focus();
     } finally {
         running = false;
     }
