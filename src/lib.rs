@@ -62,11 +62,9 @@ fn add_message(state: &Arc<State>, req: &Request) -> Result<Response, Response> 
         text: String,
     }
     let input: Input = req.json()?;
-    {
-        let mut guard = state.message_list.write().unwrap();
-        guard.add(input.text).map_err(|s| Response::text(400, s))?;
-    }
-    Ok(Response::new(200))
+    let mut guard = state.message_list.write().unwrap();
+    guard.add(input.text).map_err(|s| Response::text(400, s))?;
+    Ok(Response::json(200, json!({ "messages": guard.as_slice() })).unwrap())
 }
 
 pub fn handle_req(state: &Arc<State>, req: &Request) -> Result<Response, Response> {

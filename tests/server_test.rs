@@ -1,5 +1,6 @@
 use beatrice::{ContentType, Request, RequestBody, Response};
 use ebb_server::{handle_req, State, MAX_MESSAGE_COUNT, MAX_MESSAGE_LEN_CHARS};
+use serde::Deserialize;
 use serde_json::json;
 use std::net::Ipv4Addr;
 use std::sync::Arc;
@@ -44,92 +45,51 @@ fn test_get_index_html() {
 fn test_add_message() {
     let state = Arc::new(State::new());
     assert_eq!(
-        Ok(Response::new(200)),
+        Ok(Response::json(200, json!({"messages": ["message1"]})).unwrap()),
         handle_req(
             &state,
             &post_json_req("/add-message", json!({"text": "message1"}))
         )
     );
-    assert_eq!(["message1"], state.message_list.read().unwrap().as_slice());
-    handle_req(
-        &state,
-        &post_json_req("/add-message", json!({"text": "message2"})),
-    )
-    .unwrap();
     assert_eq!(
-        ["message2", "message1"],
-        state.message_list.read().unwrap().as_slice()
-    );
-}
-
-#[test]
-fn test_add_message_order() {
-    let state = Arc::new(State::new());
-    let messages = ["m1", "m2"];
-    for message in messages {
+        Ok(Response::json(200, json!({"messages": ["message2", "message1"]})).unwrap()),
         handle_req(
             &state,
-            &post_json_req("/add-message", json!({ "text": message })),
+            &post_json_req("/add-message", json!({"text": "message2"})),
         )
-        .unwrap();
-    }
-    assert_eq!(["m2", "m1"], state.message_list.read().unwrap().as_slice());
+    );
 }
 
 #[test]
 fn test_add_message_many_messages() {
     let state = Arc::new(State::new());
+    let mut response: Response = Response::new(0);
     for n in 0..(MAX_MESSAGE_COUNT) {
         let message = format!("m{}", n);
-        handle_req(
+        response = handle_req(
             &state,
             &post_json_req("/add-message", json!({ "text": message })),
         )
         .unwrap();
     }
-    assert_eq!(
-        MAX_MESSAGE_COUNT,
-        state.message_list.read().unwrap().as_slice().len()
-    );
-    assert_eq!(
-        "m0",
-        state
-            .message_list
-            .read()
-            .unwrap()
-            .as_slice()
-            .last()
-            .unwrap()
-    );
-    handle_req(
+    #[derive(Deserialize)]
+    struct MessagesResponse {
+        messages: Vec<String>,
+    }
+    let messages_resp: MessagesResponse =
+        serde_json::from_reader(response.body.reader().unwrap()).unwrap();
+    assert_eq!(MAX_MESSAGE_COUNT, messages_resp.messages.len());
+    assert_eq!("m0", messages_resp.messages.last().unwrap());
+    let response = handle_req(
         &state,
         &post_json_req("/add-message", json!({ "text": "messageX" })),
     )
     .unwrap();
-    assert_eq!(
-        MAX_MESSAGE_COUNT,
-        state.message_list.read().unwrap().as_slice().len()
-    );
-    assert_eq!(
-        "m1",
-        state
-            .message_list
-            .read()
-            .unwrap()
-            .as_slice()
-            .last()
-            .unwrap()
-    );
-    assert_eq!(
-        "messageX",
-        state
-            .message_list
-            .read()
-            .unwrap()
-            .as_slice()
-            .first()
-            .unwrap()
-    );
+    let messages_resp: MessagesResponse =
+        serde_json::from_reader(response.body.reader().unwrap()).unwrap();
+    assert_eq!(MAX_MESSAGE_COUNT, messages_resp.messages.len());
+    assert_eq!("m1", messages_resp.messages.last().unwrap());
+    assert_eq!("messageX", messages_resp.messages.first().unwrap());
 }
 
 #[test]
@@ -139,13 +99,6 @@ fn test_add_message_check_len() {
     let max_len_message = "a".repeat(MAX_MESSAGE_LEN_CHARS);
     let over_len_message = "a".repeat(MAX_MESSAGE_LEN_CHARS + 1);
     let state = Arc::new(State::new());
-    for message in [&min_len_message, &max_len_message] {
-        handle_req(
-            &state,
-            &post_json_req("/add-message", json!({ "text": message })),
-        )
-        .unwrap();
-    }
     for message in [&under_len_message, &over_len_message] {
         assert_eq!(
             400,
@@ -157,9 +110,17 @@ fn test_add_message_check_len() {
             .code
         );
     }
+    handle_req(
+        &state,
+        &post_json_req("/add-message", json!({ "text": min_len_message })),
+    )
+    .unwrap();
     assert_eq!(
-        [max_len_message, min_len_message],
-        state.message_list.read().unwrap().as_slice()
+        Ok(Response::json(200, json!({"messages": [max_len_message, min_len_message]})).unwrap()),
+        handle_req(
+            &state,
+            &post_json_req("/add-message", json!({ "text": max_len_message })),
+        )
     );
 }
 
