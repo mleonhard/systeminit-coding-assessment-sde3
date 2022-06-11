@@ -1,5 +1,6 @@
 import './assets/tailwind.css'
-import { doRpc } from './rpc'
+import {doRpc, isObject, RpcError, ServerError} from './rpc'
+
 console.log('index.ts');
 
 function getElementById(id: string): HTMLElement {
@@ -12,12 +13,7 @@ interface MessagesResponse {
     messages: Array<string>,
 }
 
-// https://www.technicalfeeder.com/2022/05/object-type-check-by-user-defined-type-guard-with-record-type/
 // TODO: Use a library to do these checks concisely.
-function isObject(object: unknown): object is Record<string, unknown> {
-    return typeof object === "object";
-}
-
 function isMessagesResponse(object: unknown): object is MessagesResponse {
     if (!isObject(object)) {
         return false;
@@ -47,9 +43,8 @@ function processMessagesResponse(response: Object | null) {
         return null;
     }
     if (!isMessagesResponse(response)) {
-        console.log(`unexpected server response: ${JSON.stringify(response)}`);
-        alert("Error talking to server");
-        return;
+        console.error(`unexpected server response: ${JSON.stringify(response)}`);
+        throw new ServerError(null);
     }
     const messages = response.messages;
     // TODO: Use a library or framework to make these DOM changes.
@@ -104,6 +99,12 @@ async function add_button_clicked() {
         processMessagesResponse(response);
         messageBoxElem.value = "";
         messageListElem.focus();
+    } catch (e) {
+        if (e instanceof RpcError) {
+            e.showAlert();
+        } else {
+            console.error(e);
+        }
     } finally {
         running = false;
     }
@@ -120,8 +121,15 @@ async function load() {
         running = true;
         const response = await doRpc("GET", "/get-messages", null);
         processMessagesResponse(response);
+    } catch (e) {
+        if (e instanceof RpcError) {
+            e.showAlert();
+        } else {
+            console.error(e);
+        }
     } finally {
         running = false;
     }
 }
+
 window.onload = load;

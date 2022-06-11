@@ -66,7 +66,9 @@ fn add_message(state: &Arc<State>, req: &Request) -> Result<Response, Response> 
     }
     let input: Input = req.json()?;
     let mut guard = state.message_list.write().unwrap();
-    guard.add(input.text).map_err(|s| Response::text(400, s))?;
+    guard
+        .add(input.text)
+        .map_err(|s| Response::json(400, json!({ "user_error_message": s })).unwrap())?;
     Ok(Response::json(200, json!({ "messages": guard.as_slice() })).unwrap())
 }
 
