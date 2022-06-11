@@ -1,21 +1,20 @@
 console.log('loading index.ts');
 
-// async function sleepMs(ms: number): Promise<void> {
-//     return new Promise(resolve => setTimeout(resolve, ms));
-// }
+function getElementById(id: string): HTMLElement {
+    const elem = document.getElementById(id) as HTMLInputElement;
+    console.assert(elem !== null, `element with id "${id}" not found`);
+    return elem;
+}
 
-const messageBoxElem = document.getElementById("messageBoxElem") as HTMLInputElement;
-console.assert(messageBoxElem !== null, messageBoxElem);
-const messageListElem = document.getElementById("messageListElem") as HTMLOListElement;
-console.assert(messageListElem !== null, messageListElem);
-const messageTemplateElem = document.getElementById("messageTemplateElem") as HTMLLIElement;
-console.assert(messageTemplateElem !== null, messageTemplateElem);
+const messageBoxElem = getElementById("messageBoxElem") as HTMLInputElement;
+const messageListElem = getElementById("messageListElem") as HTMLOListElement;
+const messageTemplateElem = getElementById("messageTemplateElem") as HTMLLIElement;
 
+// TODO: Find a good library to replace `fetchWithTimeout` and `doRpc`.
 interface RequestInitWithTimeout extends RequestInit {
     timeout_ms?: number,
 }
 
-// TODO: Find a good library to replace `fetchWithTimeout` and `doRpc`.
 class TimeoutError {
 }
 
@@ -115,16 +114,16 @@ async function doRpc(method: string, path: string, body: Object | null): Promise
     }
 }
 
-// https://www.technicalfeeder.com/2022/05/object-type-check-by-user-defined-type-guard-with-record-type/
-function isObject(object: unknown): object is Record<string, unknown> {
-    return typeof object === "object";
-}
-
 interface MessagesResponse {
     messages: Array<string>,
 }
 
+// https://www.technicalfeeder.com/2022/05/object-type-check-by-user-defined-type-guard-with-record-type/
 // TODO: Use a library to do these checks concisely.
+function isObject(object: unknown): object is Record<string, unknown> {
+    return typeof object === "object";
+}
+
 function isMessagesResponse(object: unknown): object is MessagesResponse {
     if (!isObject(object)) {
         return false;
@@ -143,6 +142,7 @@ function isMessagesResponse(object: unknown): object is MessagesResponse {
 }
 
 function sanitizeHTML(text: string): string {
+    // TODO: Find out if this is enough.
     var element = document.createElement('div');
     element.innerText = text;
     return element.innerHTML;
@@ -184,11 +184,13 @@ function processMessagesResponse(response: Object | null) {
     }
 }
 
+// TODO: Separate this logic into a class.
+// TODO: Show an activity indicator while processing.
 declare var running: Boolean;
 running = false;
 
 async function add_button_clicked() {
-    console.log("add button clicked");
+    console.log("add_button_clicked");
     if (running) {
         return;
     }
@@ -199,6 +201,7 @@ async function add_button_clicked() {
             return;
         }
         const response: Object | null = await doRpc("POST", "/add-message", {"text": message});
+        // TODO: Focus the message box after user dismisses error dialog.
         processMessagesResponse(response);
         messageBoxElem.value = "";
         messageListElem.focus();
