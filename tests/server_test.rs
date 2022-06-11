@@ -35,7 +35,10 @@ fn post_json_req(path: &'static str, body: impl serde::Serialize) -> Request {
 fn test_get_index_html() {
     for path in ["/", "/index.html"] {
         assert_eq!(
-            Ok(Response::html(200, include_str!("../dist/index.html"))),
+            Ok(Response::html(
+                200,
+                include_bytes!("../dist/index.html").as_slice()
+            )),
             handle_req(&Arc::new(State::new()), &new_req(path))
         );
     }
