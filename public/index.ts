@@ -124,6 +124,7 @@ interface MessagesResponse {
     messages: Array<string>,
 }
 
+// TODO: Use a library to do these checks concisely.
 function isMessagesResponse(object: unknown): object is MessagesResponse {
     if (!isObject(object)) {
         return false;
@@ -141,16 +142,42 @@ function isMessagesResponse(object: unknown): object is MessagesResponse {
     return true;
 }
 
-function processMessagesResponse(response: Object | null): Array<String> | null {
+function processMessagesResponse(response: Object | null) {
     if (response == null) {
         return null;
     }
-    if (isMessagesResponse(response)) {
-        return response.messages;
+    if (!isMessagesResponse(response)) {
+        console.log(`unexpected server response: ${JSON.stringify(response)}`);
+        alert("Error talking to server");
+        return;
     }
-    console.log(`unexpected server response: ${JSON.stringify(response)}`);
-    alert("Error talking to server");
-    return null;
+    const messages = response.messages;
+    // TODO: Use a library or framework to make these DOM changes.
+    let messageElems: Array<HTMLLIElement> = Array.from(messageListElem.querySelectorAll("li"));
+    while (true) {
+        // https://github.com/microsoft/TypeScript/issues/37639
+        let messageElem = messageElems.shift();
+        if (messageElem === undefined) {
+            break;
+        }
+        let message = messages.shift();
+        if (message === undefined) {
+            messageListElem.removeChild(messageElem);
+        } else {
+            // TODO: Sanitize.
+            messageElem.innerHTML = message;
+        }
+    }
+    while (true) {
+        let message = messages.shift();
+        if (message === undefined) {
+            break;
+        }
+        const messageElem = messageTemplateElem.cloneNode(true) as HTMLLIElement;
+        // TODO: Sanitize.
+        messageElem.innerHTML = message;
+        messageListElem.appendChild(messageElem);
+    }
 }
 
 declare var running: Boolean;
