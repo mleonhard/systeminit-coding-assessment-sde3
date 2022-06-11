@@ -11,7 +11,8 @@ version = "0.1.0"
 # Beatrice uses Safina, an async runtime which I also wrote.
 # I wrote Safina to see if it was possible to write an async runtime with `forbid(unsafe_code)`.
 # I learned a lot about Rust and async Rust while writing Safina.
-beatrice = { version = "^0.3.0", features = ["json"] }
+beatrice = { version = "^0.3.1", features = ["include_dir", "json"] }
+include_dir = "^0.7.2"
 # TODO: Make beatrice re-export these.
 serde = "1"
 serde_json = "1"

@@ -1,8 +1,11 @@
 #![forbid(unsafe_code)]
-use beatrice::{ContentType, Request, Response};
+use beatrice::{Request, Response};
+use include_dir::{include_dir, Dir};
 use serde::Deserialize;
 use serde_json::json;
 use std::sync::{Arc, RwLock};
+
+static DIST_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/dist");
 
 pub const MAX_MESSAGE_LEN_CHARS: usize = 200;
 pub const MAX_MESSAGE_COUNT: usize = 100;
@@ -70,14 +73,9 @@ fn add_message(state: &Arc<State>, req: &Request) -> Result<Response, Response> 
 pub fn handle_req(state: &Arc<State>, req: &Request) -> Result<Response, Response> {
     match (req.method(), req.url().path()) {
         ("GET", "/health") => Ok(Response::text(200, "ok")),
-        ("GET", "/") | ("GET", "/index.html") => {
-            Ok(Response::html(200, include_str!("../dist/index.html")))
-        }
-        ("GET", "/index.js") => Ok(Response::new(200)
-            .with_type(ContentType::JavaScript)
-            .with_body(include_str!("../dist/index.js"))),
         ("GET", "/get-messages") => Ok(get_messages(state)),
         ("POST", "/add-message") => add_message(state, req),
+        ("GET", path) => Response::include_dir(path, &DIST_DIR),
         _ => Ok(Response::text(404, "Not found")),
     }
 }
