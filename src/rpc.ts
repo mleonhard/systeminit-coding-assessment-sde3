@@ -13,19 +13,6 @@ export class RpcError {
     }
 }
 
-// export function isRpcError(object: unknown): object is RpcError {
-//     if (object instanceof TimeoutError
-//         || object instanceof NetworkError
-//         || object instanceof UserError
-//         || object instanceof ServerError) {
-//         return true;
-//     }
-//     if (!isObject(object)) {
-//         return false;
-//     }
-//     return typeof object.showAlert === "function";
-// }
-
 export class TimeoutError extends RpcError {
     showAlert(): void {
         alert("Error talking to server.  Please try again.");

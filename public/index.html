@@ -1,31 +1,17 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="">
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>Ephemeral Bulletin Board</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body class="bg-slate-50">
-<div class="container mx-auto bg-white">
-    <h2 class="box-border border-2 border-b-gray-700 p-4 text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-        Ephemeral Bulletin Board
-    </h2>
-    <p class="p-4 text-lg">
-        Messages disappear whenever the server restarts.
-    </p>
-    <form id="messageForm" class="p-4 flex gap-x-4 gap-y-2 items-center flex-wrap">
-        <label for="messageBoxElem">Enter a message:</label>
-        <input id="messageBoxElem" type="text" size="40" class="flex-1 box-border p-2 border border-black" autofocus/>
-        <button class="box-border p-2 border-2 rounded-xl border-black bg-sky-100 hover:bg-sky-200 text-black"
-                type="submit">Add Message
-        </button>
-    </form>
-    <ul style="display: none;">
-        <li class="p-4 box-border border-2 border-dashed border-transparent border-t-gray-200"
-            id="messageTemplateElem"></li>
-    </ul>
-    <ul id="messageListElem"></ul>
-</div>
-
+<noscript>
+    <strong>This page only works when JavaScript is enabled in your browser. Please enable it to continue.</strong>
+</noscript>
+<div id="app"></div>
+<!-- built files will be auto injected -->
 </body>
 </html>

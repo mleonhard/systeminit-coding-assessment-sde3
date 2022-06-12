@@ -1,27 +1,36 @@
-<template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-</template>
+<script lang="ts" setup>
+import {onMounted} from "vue"
+import {RpcError} from "@/rpc";
+import {MessageListModel} from "@/MessageListModel";
+import MessageForm from './components/MessageForm.vue';
+import MessageList from './components/MessageList.vue';
 
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import HelloWorld from './components/HelloWorld.vue';
+const messageListModel = new MessageListModel();
 
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class App extends Vue {}
+onMounted(async () => {
+  console.log("App onMounted");
+  try {
+    await messageListModel.fetchMessages();
+  } catch (e) {
+    if (e instanceof RpcError) {
+      e.showAlert();
+    } else {
+      console.error(e);
+    }
+  }
+});
+
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<template>
+  <div class="container mx-auto bg-white">
+    <h2 class="box-border border-2 border-b-gray-700 p-4 text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+      Ephemeral Bulletin Board
+    </h2>
+    <p class="p-4 text-lg">
+      Messages disappear whenever the server restarts.
+    </p>
+    <MessageForm :model="messageListModel"/>
+    <MessageList :model="messageListModel"/>
+  </div>
+</template>
