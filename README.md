@@ -16,14 +16,18 @@ It uses:
 - [TailwindCSS](https://tailwindcss.com/)
 
 ## How to Use
-1. Install Rust, NodeJS, and `@vue/cli`.
-2. Start the server:
+1. Install [Rust](https://www.rust-lang.org/) and [NodeJS](https://nodejs.org/en/).
+2. Download frontend dependencies:
+   ```
+   $ npm install
+   ```
+3. Start the server:
    ```
    $ ./build-and-run.sh
    ```
-3. Connect to the server with a web browser: <http://localhost:8000/>
-4. Enter a message in the box and tap the "Add" button.
-5. Refresh the page to see new messages.
+4. Connect to the server with a web browser: <http://localhost:8000/>
+5. Enter a message in the box and tap the "Add" button.
+6. Refresh the page to see new messages from other users.
 
 ## Screenshots
 ![A browser window showing Ephemeral Bulletin Board app with some messages](screenshot.png)
@@ -43,9 +47,10 @@ $ cargo test
 
 ## TO DO
 - Show an activity indicator while loading or adding a message.
-- Focus the message box again after trying to add a message.
-- Store messages in a database
+- Focus the message box after user presses the Add Message button.
 - Stop sanitizing output since Vue seems to do that automatically.
+- Poll for new messages.
+- Store messages in a database
 - Measure test coverage
 - Test the frontend with end-to-end tests.
 - Test `MessageListModel`
